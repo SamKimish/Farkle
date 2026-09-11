@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dice Game · aka Farkle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9902267115550709" crossorigin="anonymous" onerror="window.__adsbygoogleBlocked=true"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#0C0A08;
+  --s1:#141208;
+  --s2:#1D1910;
+  --s3:#272318;
+  --border:#38321E;
+  --border2:#4A4228;
+  --tx1:#EDE7DC;
+  --tx2:#9A8F7C;
+  --tx3:#5A5240;
+  --gold:#C8861E;
+  --gold2:#E8A030;
+  --gold-bg:rgba(200,134,30,0.10);
+  --gold-br:rgba(200,134,30,0.30);
+  --green:#2A906A;
+  --green2:#1C7050;
+  --green-bg:rgba(42,144,106,0.10);
+  --red:#C04830;
+  --red2:#982E18;
+  --red-bg:rgba(192,72,48,0.10);
+  --red-br:rgba(192,72,48,0.30);
+  --purple:#7D5CB5;
+  --purple2:#6040A0;
+  --purple-bg:rgba(125,92,181,0.10);
+  --purple-br:rgba(125,92,181,0.30);
+  --r:12px;
+  --rsm:8px;
+}
+
+html,body{min-height:100%;background:var(--bg);color:var(--tx1);font-family:'Outfit',system-ui,sans-serif;}
+body{
+  background-image:radial-gradient(rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:22px 22px;
+  -webkit-text-size-adjust:100%;
+}
+#app{max-width:480px;margin:0 auto;padding:0 16px 60px;}
+
+/* ── BUTTONS ── */
+button{
+  font-family:'Outfit',system-ui,sans-serif;
+  cursor:pointer;border-radius:var(--rsm);
+  border:1px solid var(--border);
+  background:var(--s2);color:var(--tx1);
+  font-size:15px;font-weight:400;padding:10px 16px;
+  transition:background 0.1s,transform 0.08s,filter 0.1s;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+}
+button:active{transform:scale(0.96);}
+button:disabled{opacity:0.28;cursor:not-allowed;transform:none!important;pointer-events:none;}
+
+/* ── SETUP HEADER ── */
+.hdr-setup{
+  padding:36px 0 22px;text-align:center;
+  border-bottom:1px solid var(--border);margin-bottom:28px;
+}
+.logo-big{
+  font-family:'Bebas Neue','Impact',sans-serif;
+  font-size:clamp(48px,13vw,66px);
+  letter-spacing:clamp(4px,1.5vw,8px);
+  color:var(--gold2);line-height:1;
+  text-shadow:0 0 50px rgba(232,160,48,0.28);
+  display:block;
+}
+.logo-aka{
+  font-size:13px;color:var(--tx3);
+  letter-spacing:0.18em;font-weight:300;
+  margin-top:5px;font-style:italic;
+}
+.tagline{
+  font-size:10px;color:var(--tx3);
+  letter-spacing:0.20em;text-transform:uppercase;
+  margin-top:10px;font-weight:500;
+}
+.about-link{
+  display:inline-block;font-size:11px;color:var(--tx3);
+  text-decoration:none;margin-top:14px;
+  letter-spacing:0.04em;border-bottom:1px solid var(--border2);
+  padding-bottom:1px;
+}
+.about-link:active{color:var(--gold2);}
+
+/* ── GAME HEADER ── */
+.hdr-game{
+  display:flex;align-items:center;
+  padding:12px 0 10px;
+  border-bottom:1px solid var(--border);margin-bottom:16px;
+  gap:10px;
+}
+.logo-sm{
+  font-family:'Bebas Neue','Impact',sans-serif;
+  font-size:26px;letter-spacing:4px;color:var(--gold2);
+  line-height:1;margin-right:auto;
+  display:flex;flex-direction:column;gap:0;
+}
+.logo-sm-aka{
+  font-size:8px;color:var(--tx3);
+  letter-spacing:0.12em;font-style:italic;
+  font-family:'Outfit',system-ui,sans-serif;
+  font-weight:300;line-height:1;margin-top:1px;
+}
+.phase-tag{
+  font-size:10px;font-weight:600;
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;flex-shrink:0;
+}
+.phase-playing{color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-br);}
+.phase-lc{
+  color:var(--red);background:var(--red-bg);border:1px solid var(--red-br);
+  animation:blink 1.4s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.btn-newgame{
+  font-size:12px;color:var(--tx2);padding:5px 10px;
+  background:transparent;border-color:var(--border);flex-shrink:0;
+}
+.btn-undo{
+  font-size:12px;color:var(--tx2);padding:5px 10px;
+  background:transparent;border-color:var(--border);flex-shrink:0;
+}
+
+/* ── AD OVERLAY ── */
+.ad-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(8,6,4,0.92);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  animation:fadeIn 0.2s ease;
+}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.ad-box{
+  background:var(--s2);
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  padding:20px;
+  width:100%;max-width:340px;
+  text-align:center;
+}
+.ad-intro{
+  font-size:11px;color:var(--tx3);
+  letter-spacing:0.12em;text-transform:uppercase;
+  font-weight:500;margin-bottom:14px;
+}
+
+/* =========================================================
+   AD SLOT — wired to Google AdSense via the AD_CLIENT/AD_SLOT
+   constants near the top of the script below. Standard IAB
+   "Medium Rectangle": 300×250px. Until AD_SLOT is filled in
+   (ad unit created + AdSense account active), a placeholder
+   box renders here instead of a real <ins class="adsbygoogle">.
+
+   Requirements: HTTPS domain, active AdSense account with the
+   domain approved, GDPR CMP for UK/EU users (e.g. Google's own
+   Funding Choices).
+   ========================================================= */
+.ad-slot{
+  width:300px;height:250px;
+  background:var(--s3);
+  border:2px dashed var(--border2);
+  border-radius:var(--rsm);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  margin:0 auto 16px;gap:6px;
+  color:var(--tx3);
+}
+.ad-slot-lbl{font-size:13px;letter-spacing:0.04em;}
+.ad-slot-dim{font-size:11px;font-family:'DM Mono','Courier New',monospace;opacity:0.7;}
+.ad-continue{
+  width:100%;padding:14px;font-size:15px;font-weight:500;
+  border-radius:var(--rsm);
+  background:var(--green);color:white;border-color:var(--green2);
+  transition:background 0.1s,transform 0.08s;
+}
+.ad-continue:disabled{
+  background:var(--s3);border-color:var(--border);
+  color:var(--tx3);pointer-events:none;opacity:1;
+}
+.ad-continue:not(:disabled):active{background:var(--green2);}
+.ad-progress{
+  height:2px;background:var(--s3);border-radius:1px;
+  margin-bottom:12px;overflow:hidden;
+}
+.ad-prog-fill{
+  height:100%;background:var(--border2);
+  border-radius:1px;
+  transition:width 1s linear;
+}
+
+/* ── SUPPORT WALL (adblock detected) ── */
+.support-icon{font-size:32px;line-height:1;margin-bottom:10px;}
+.support-body{
+  font-size:14px;color:var(--tx2);line-height:1.55;
+  text-align:left;margin-bottom:18px;
+}
+.support-retry{
+  width:100%;padding:14px;font-size:15px;font-weight:500;
+  border-radius:var(--rsm);background:var(--gold);
+  color:#1A1204;border-color:var(--gold2);margin-bottom:10px;
+}
+.support-retry:not(:disabled):active{background:var(--gold2);}
+.support-note{
+  display:none;font-size:12px;color:var(--red);
+  text-align:center;margin:-2px 0 10px;
+}
+.support-note.show{display:block;}
+.support-skip{
+  width:100%;padding:12px;font-size:13px;font-weight:400;
+  border-radius:var(--rsm);background:transparent;
+  border-color:var(--border2);color:var(--tx3);
+}
+.support-skip:active{color:var(--tx1);background:transparent;}
+
+/* ── FORM ── */
+.field{margin-bottom:20px;}
+.field>label{
+  display:block;font-size:11px;color:var(--tx3);
+  letter-spacing:0.13em;text-transform:uppercase;
+  font-weight:500;margin-bottom:8px;
+}
+input[type=text],input[type=number]{
+  font-family:'Outfit',system-ui,sans-serif;
+  font-size:16px;padding:13px 14px;
+  border:1px solid var(--border);border-radius:var(--rsm);
+  background:var(--s1);color:var(--tx1);
+  width:100%;outline:none;
+  transition:border-color 0.15s;
+  -webkit-appearance:none;appearance:none;
+}
+input:focus{border-color:var(--gold);}
+input::placeholder{color:var(--tx3);}
+.add-row{display:flex;gap:8px;}
+.add-row input{flex:1;}
+
+/* ── PLAYER LIST ── */
+.p-item{
+  display:flex;align-items:center;padding:13px 14px;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--rsm);margin-bottom:7px;font-size:16px;
+}
+.p-item span{flex:1;color:var(--tx1);}
+.rm{background:transparent;border:none;color:var(--tx3);font-size:22px;padding:0 4px;line-height:1;}
+.rm:active{color:var(--red);background:transparent;}
+
+.pill-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:-12px;margin-bottom:16px;}
+.pill{
+  font-size:13px;padding:5px 12px;border-radius:999px;
+  color:var(--tx2);background:transparent;border-color:var(--border);
+  display:flex;align-items:center;gap:5px;
+}
+.pill:active{background:var(--s2);color:var(--tx1);}
+.pill-count{
+  font-size:10px;font-family:'DM Mono','Courier New',monospace;
+  color:var(--tx3);background:var(--s3);
+  border-radius:999px;padding:1px 5px;
+  line-height:1.4;
+}
+
+/* ── ORDER SCREEN ── */
+.order-hint{font-size:13px;color:var(--tx2);line-height:1.55;margin-bottom:16px;}
+.order-list{margin-bottom:24px;}
+.order-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--rsm);padding:13px 14px;margin-bottom:7px;
+  transition:transform 0.15s ease,border-color 0.15s,background 0.15s;
+  touch-action:pan-y;
+}
+.order-row.dragging{
+  border-color:var(--gold-br);background:var(--gold-bg);
+  position:relative;z-index:10;box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  transition:none;
+}
+.order-num{
+  font-family:'DM Mono','Courier New',monospace;font-size:13px;
+  color:var(--tx3);width:18px;flex-shrink:0;
+}
+.order-row.dragging .order-num{color:var(--gold);}
+.order-name{flex:1;font-size:16px;color:var(--tx1);}
+.order-handle{
+  font-size:18px;color:var(--tx3);padding:6px 10px;
+  cursor:grab;touch-action:none;flex-shrink:0;line-height:1;
+  -webkit-user-select:none;user-select:none;
+}
+.order-row.dragging .order-handle{color:var(--gold);cursor:grabbing;}
+
+/* ── START BUTTON ── */
+.btn-start{
+  width:100%;padding:17px;font-size:17px;font-weight:500;
+  border-radius:var(--r);background:var(--green);
+  color:white;border-color:var(--green2);letter-spacing:0.02em;
+}
+.btn-start:not(:disabled):active{background:var(--green2);transform:scale(0.98);}
+.btn-start:disabled{background:var(--s3);border-color:var(--border);color:var(--tx3);pointer-events:none;}
+
+/* ── LAST CHANCE BANNER ── */
+.lc-banner{
+  background:var(--red-bg);border:1px solid var(--red-br);
+  border-radius:var(--rsm);padding:12px 14px;margin-bottom:16px;
+}
+.lc-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.lc-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--red);
+  flex-shrink:0;animation:dot-pulse 1.2s ease-in-out infinite;
+}
+@keyframes dot-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(0.6);}}
+.lc-ttl{font-size:11px;font-weight:600;color:var(--red);letter-spacing:0.13em;text-transform:uppercase;}
+.lc-body{font-size:13px;color:var(--tx2);line-height:1.55;}
+.lc-hi{color:var(--tx1);font-family:'DM Mono','Courier New',monospace;font-weight:500;}
+
+/* ── PLAYER CARDS ── */
+.pgrid{display:grid;gap:8px;margin-bottom:18px;}
+.pcard{
+  padding:12px 8px 10px;text-align:center;
+  border-radius:var(--rsm);border:1px solid var(--border);
+  background:var(--s1);transition:border-color 0.15s,background 0.15s;
+}
+.pcard.active{border-color:var(--gold);background:var(--gold-bg);}
+.pcard.leader-card{border-color:var(--red-br);}
+.pcard.active.leader-card{border-color:var(--gold);background:var(--gold-bg);}
+.pcname{
+  font-size:10px;color:var(--tx3);letter-spacing:0.08em;
+  text-transform:uppercase;font-weight:500;margin-bottom:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pcard.active .pcname{color:var(--gold);}
+.pcard.leader-card:not(.active) .pcname{color:var(--red);}
+.pcscore{font-family:'DM Mono','Courier New',monospace;font-size:20px;font-weight:500;color:var(--tx1);line-height:1;}
+.pcard.active .pcscore{color:var(--gold2);}
+.pcard.leader-card:not(.active) .pcscore{color:var(--red);}
+.pcbar{height:2px;background:var(--s3);border-radius:1px;margin-top:7px;overflow:hidden;}
+.pcfill{height:100%;background:var(--border2);border-radius:1px;transition:width 0.4s;}
+.pcard.active .pcfill{background:var(--gold);}
+.pcard.leader-card:not(.active) .pcfill{background:var(--red);}
+.pctag{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.10em;margin-top:4px;}
+.pctag.on{color:var(--gold);}
+.pctag.lead{color:var(--red);}
+
+/* ── TURN SECTION ── */
+.turn-who{text-align:center;margin-bottom:16px;}
+.turn-name{font-size:22px;font-weight:400;color:var(--tx1);}
+.turn-sub{font-size:12px;color:var(--tx3);letter-spacing:0.04em;margin-top:3px;}
+.turn-bar{
+  display:flex;align-items:center;gap:10px;
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:var(--rsm);padding:14px 16px;margin-bottom:14px;
+}
+.tbar-lbl{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:0.12em;text-transform:uppercase;flex-shrink:0;}
+.tbar-val{
+  font-family:'DM Mono','Courier New',monospace;
+  font-size:36px;font-weight:500;line-height:1;
+  color:var(--tx3);transition:color 0.15s;letter-spacing:-1px;
+}
+.tbar-val.live{color:var(--gold2);}
+.clr{
+  margin-left:auto;font-size:12px;color:var(--tx3);
+  background:transparent;border:none;padding:6px 0;flex-shrink:0;
+}
+.clr:active{color:var(--red);background:transparent;transform:none;}
+
+/* ── SCORE GRID ── */
+.sgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:10px;}
+.sbtn{
+  padding:12px 2px;font-size:13px;
+  font-family:'DM Mono','Courier New',monospace;
+  border-radius:var(--rsm);background:var(--s1);
+  border:1px solid var(--border);color:var(--tx1);text-align:center;
+}
+.sbtn:active{background:var(--s2);transform:scale(0.94);}
+.custom-row{display:flex;gap:8px;margin-bottom:18px;}
+.custom-row input{flex:1;font-family:'DM Mono','Courier New',monospace;}
+
+/* ── ACTION BUTTONS ── */
+.act-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px;}
+.abtn{
+  border-radius:var(--r);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:16px 6px;min-height:72px;gap:4px;
+}
+.av{font-size:14px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;}
+.ap{font-size:12px;font-family:'DM Mono','Courier New',monospace;opacity:0.85;}
+.abtn-zilch{background:var(--purple-bg);border:1px solid var(--purple-br);color:var(--purple);}
+.abtn-zilch:active{filter:brightness(0.80);transform:scale(0.96);}
+.abtn-bank{background:var(--green);border:1px solid var(--green2);color:white;}
+.abtn-bank:not(:disabled):active{background:var(--green2);transform:scale(0.96);}
+.abtn-bank:disabled{background:var(--s3);border-color:var(--border);color:var(--tx3);}
+.abtn-bank .ap{opacity:1;}
+.abtn-bust{background:var(--red-bg);border:1px solid var(--red-br);color:var(--red);}
+.abtn-bust:active{filter:brightness(0.80);transform:scale(0.96);}
+
+/* ── SCORING REF ── */
+.ref-wrap{border:1px solid var(--border);border-radius:var(--rsm);overflow:hidden;margin-bottom:20px;}
+details summary{
+  list-style:none;cursor:pointer;user-select:none;
+  padding:11px 14px;font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.12em;
+  color:var(--tx3);background:var(--s1);display:flex;align-items:center;gap:6px;
+}
+details summary::-webkit-details-marker{display:none;}
+details[open] summary{border-bottom:1px solid var(--border);}
+.rtbl{width:100%;font-size:13px;font-family:'DM Mono','Courier New',monospace;border-collapse:collapse;background:var(--s1);}
+.rtbl td{padding:9px 14px;color:var(--tx2);border-bottom:1px solid var(--border);}
+.rtbl tr:last-child td{border-bottom:none;}
+.rtbl td:last-child{text-align:right;color:var(--tx1);}
+
+/* ── LOG ── */
+.divider{height:1px;background:var(--border);margin:20px 0 14px;}
+.sec-hd{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;}
+.logrow{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border);color:var(--tx2);}
+.logrow:last-child{border-bottom:none;}
+.lname{color:var(--tx1);font-weight:500;min-width:60px;}
+.lbank{color:var(--green);}
+.lzilch{color:var(--purple);}
+.lbust{color:var(--red);}
+.ltot{margin-left:auto;font-family:'DM Mono','Courier New',monospace;color:var(--tx1);}
+
+/* ── WIN SCREEN ── */
+.win-wrap{padding:24px 0;text-align:center;}
+.win-icon{font-size:60px;display:block;margin-bottom:16px;}
+.win-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.14em;color:var(--tx3);margin-bottom:6px;}
+.win-name{
+  font-family:'Bebas Neue','Impact',sans-serif;
+  font-size:52px;letter-spacing:6px;color:var(--gold2);
+  text-shadow:0 0 40px rgba(232,160,48,0.35);
+  line-height:1;margin-bottom:6px;
+}
+.win-pts{font-family:'DM Mono','Courier New',monospace;font-size:26px;color:var(--gold);margin-bottom:28px;}
+.ftbl{width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;border:1px solid var(--border);border-radius:var(--rsm);overflow:hidden;}
+.ftbl th{font-size:10px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:0.10em;background:var(--s1);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);}
+.ftbl td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--tx2);}
+.ftbl tr:last-child td{border-bottom:none;}
+.ftbl th:last-child,.ftbl td:last-child{text-align:right;font-family:'DM Mono','Courier New',monospace;}
+.ftbl .wrow{background:var(--gold-bg);}
+.ftbl .wrow td{color:var(--gold2);font-weight:500;border-bottom-color:var(--gold-br);}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-again{padding:16px;font-size:16px;font-weight:500;border-radius:var(--r);background:var(--green);color:white;border-color:var(--green2);}
+.btn-again:active{background:var(--green2);}
+.btn-new{padding:16px;font-size:16px;font-weight:400;border-radius:var(--r);background:transparent;border-color:var(--border2);color:var(--tx1);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ── GAME STATE ── */
+const G={
+  phase:'setup',
+  players:[],
+  cur:0,
+  target:5000,
+  turnScore:0,
+  log:[],
+  winner:-1,
+  lastChanceTrigger:-1,
+  history:[]
+};
+const HISTORY_MAX=50;
+
+const QS=[50,100,150,200,250,300,400,500,600,1000];
+const PLACES=['1st','2nd','3rd','4th','5th','6th','7th','8th'];
+const FALLBACK_NAMES=['Sam','Jordan','Alex','Riley','Morgan','Casey'];
+const NAME_STORE='dicegame_name_freq';
+const AD_SECS=5; /* seconds to show ad before Continue is enabled */
+const AD_CLIENT='ca-pub-9902267115550709';
+const AD_SLOT=''; /* TODO: paste your AdSense ad unit's slot ID here once your account is reactivated and you've created a 300×250 display ad unit — until then the placeholder box shows instead */
+
+/* ── LOCAL STORAGE: NAME FREQUENCY ── */
+function storedFreq(){
+  try{return JSON.parse(localStorage.getItem(NAME_STORE))||{};}
+  catch{return {};}
+}
+function recordNames(players){
+  try{
+    const f=storedFreq();
+    players.forEach(p=>{f[p.name]=(f[p.name]||0)+1;});
+    localStorage.setItem(NAME_STORE,JSON.stringify(f));
+  }catch{}
+}
+/* Returns up to `limit` suggested names, sorted by use frequency,
+   filtered so already-added names don't show as pills */
+function suggestedNames(taken,limit=5){
+  const f=storedFreq();
+  const frequent=Object.entries(f)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([n,c])=>({n,c}))
+    .filter(({n})=>!taken.has(n));
+  const freqNames=frequent.map(({n})=>n);
+  /* fill remaining slots from fallback defaults */
+  const extras=FALLBACK_NAMES.filter(n=>!taken.has(n)&&!freqNames.includes(n));
+  return [...frequent.slice(0,limit).map(({n,c})=>({n,c})),
+          ...extras.map(n=>({n,c:0}))].slice(0,limit);
+}
+
+/* ── DOM HELPER ── */
+function e(tag,attrs,...kids){
+  const el=document.createElement(tag);
+  if(attrs) for(const[k,v]of Object.entries(attrs)){
+    if(k==='class') el.className=v;
+    else if(k==='style'&&typeof v==='object') Object.assign(el.style,v);
+    else if(k.startsWith('@')) el.addEventListener(k.slice(1),v);
+    else el[k]=v;
+  }
+  for(const k of kids.flat()){
+    if(k==null) continue;
+    el.append(k instanceof Node?k:document.createTextNode(String(k)));
+  }
+  return el;
+}
+
+/* ── UNDO ── */
+/* Snapshots the fields a scoring action can change, so a mis-tap
+   (wrong point value, wrong Bank/Bust/Zilch) can be reverted. */
+function pushHistory(){
+  G.history.push({
+    players:G.players.map(p=>({...p})),
+    cur:G.cur,
+    turnScore:G.turnScore,
+    log:G.log.map(l=>({...l})),
+    phase:G.phase,
+    winner:G.winner,
+    lastChanceTrigger:G.lastChanceTrigger
+  });
+  if(G.history.length>HISTORY_MAX) G.history.shift();
+}
+function undo(){
+  if(G.history.length===0) return;
+  const prev=G.history.pop();
+  G.players=prev.players;G.cur=prev.cur;G.turnScore=prev.turnScore;
+  G.log=prev.log;G.phase=prev.phase;G.winner=prev.winner;
+  G.lastChanceTrigger=prev.lastChanceTrigger;
+  render();
+}
+
+/* ── AD BLOCK DETECTION ── */
+/* Two independent signals, either of which means "blocked":
+   1. The adsbygoogle.js loader itself failed to load (onerror on the
+      <script> tag in <head> sets this flag — most blockers do this).
+   2. A "bait" element using classic ad-slot class names gets hidden by
+      the blocker's cosmetic filters, even if the script did load. */
+function detectAdBlock(){
+  return new Promise(resolve=>{
+    if(window.__adsbygoogleBlocked){resolve(true);return;}
+    const bait=e('div',{class:'adsbox ad-banner ad-placement adsbygoogle ads ad-unit'});
+    bait.style.cssText='position:absolute;top:-9999px;left:-9999px;width:2px;height:2px;';
+    document.body.appendChild(bait);
+    setTimeout(()=>{
+      const hidden=bait.offsetParent===null||bait.offsetHeight===0||
+        getComputedStyle(bait).display==='none'||getComputedStyle(bait).visibility==='hidden';
+      bait.remove();
+      resolve(hidden||!!window.__adsbygoogleBlocked);
+    },150);
+  });
+}
+
+/* ── AD OVERLAY ── */
+/* Entry point: decides between the real ad overlay and the "please
+   support us" wall, then calls `callback` once the player is through. */
+async function showAd(callback){
+  if(!AD_SLOT){renderAdOverlay(callback);return;} /* no live ad unit configured — nothing to detect */
+  const blocked=await detectAdBlock();
+  if(blocked) renderSupportWall(callback);
+  else renderAdOverlay(callback);
+}
+
+/* Shows an interstitial ad overlay, then calls `callback` when dismissed.
+   Replace the contents of .ad-slot with your real ad network code.
+   See the CSS comment above .ad-slot for a Google AdSense example. */
+function renderAdOverlay(callback){
+  const overlay=e('div',{class:'ad-overlay'});
+  const progFill=e('div',{class:'ad-prog-fill',style:{width:'0%'}});
+  let secs=AD_SECS;
+  const contBtn=e('button',{class:'ad-continue',disabled:true},`Continue in ${secs}s`);
+
+  /* Tick the countdown */
+  const tick=setInterval(()=>{
+    secs--;
+    const pct=Math.round(((AD_SECS-secs)/AD_SECS)*100);
+    progFill.style.width=pct+'%';
+    if(secs<=0){
+      clearInterval(tick);
+      contBtn.disabled=false;
+      contBtn.textContent='Continue →';
+    } else {
+      contBtn.textContent=`Continue in ${secs}s`;
+    }
+  },1000);
+
+  contBtn.addEventListener('click',()=>{
+    clearInterval(tick);
+    overlay.remove();
+    callback();
+  });
+
+  /* Ad slot — real AdSense unit once AD_SLOT is configured, otherwise a placeholder */
+  let adSlot;
+  if(AD_SLOT){
+    adSlot=e('ins',{class:'adsbygoogle',style:{display:'inline-block',width:'300px',height:'250px'}});
+    adSlot.setAttribute('data-ad-client',AD_CLIENT);
+    adSlot.setAttribute('data-ad-slot',AD_SLOT);
+  } else {
+    adSlot=e('div',{class:'ad-slot'},
+      e('span',{class:'ad-slot-lbl'},'Advertisement'),
+      e('span',{class:'ad-slot-dim'},'300 × 250')
+    );
+  }
+
+  const box=e('div',{class:'ad-box'},
+    e('div',{class:'ad-intro'},'A quick word from our sponsor'),
+    adSlot,
+    e('div',{class:'ad-progress'},progFill),
+    contBtn
+  );
+  overlay.append(box);
+  document.body.appendChild(overlay);
+
+  /* Request the ad only once the <ins> is actually in the DOM */
+  if(AD_SLOT){
+    try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(err){}
+  }
+}
+
+/* Shown instead of the ad when a blocker is detected: asks nicely,
+   offers to re-check, and always lets the player through either way. */
+function renderSupportWall(callback){
+  const overlay=e('div',{class:'ad-overlay'});
+
+  const note=e('div',{class:'support-note'},'Still detected — you can keep playing anyway below.');
+
+  const retryBtn=e('button',{class:'support-retry'},'I\'ve disabled it — Retry');
+  retryBtn.addEventListener('click',async()=>{
+    retryBtn.disabled=true;retryBtn.textContent='Checking…';
+    const stillBlocked=await detectAdBlock();
+    if(stillBlocked){
+      note.classList.add('show');
+      retryBtn.disabled=false;retryBtn.textContent='I\'ve disabled it — Retry';
+    } else {
+      overlay.remove();
+      renderAdOverlay(callback);
+    }
+  });
+
+  const skipBtn=e('button',{class:'support-skip'},'Continue without support');
+  skipBtn.addEventListener('click',()=>{
+    overlay.remove();
+    callback();
+  });
+
+  const box=e('div',{class:'ad-box'},
+    e('div',{class:'support-icon'},'🛡️'),
+    e('div',{class:'ad-intro'},'Ad blocker detected'),
+    e('div',{class:'support-body'},
+      'This game is free to play thanks to a short ad shown before each round. ',
+      'If you\'re able to, consider disabling your ad blocker for this site — it helps fund development.'
+    ),
+    retryBtn,
+    note,
+    skipBtn
+  );
+  overlay.append(box);
+  document.body.appendChild(overlay);
+}
+
+/* ── GAME ACTIONS ── */
+function addPlayer(name){
+  if(!name.trim()||G.players.length>=8) return;
+  G.players.push({name:name.trim(),score:0,turnsCompleted:0});
+  render();
+}
+function removePlayer(i){G.players.splice(i,1);render();}
+
+function startGame(){
+  recordNames(G.players); /* save names to localStorage before starting */
+  G.phase='playing';G.cur=0;G.turnScore=0;G.log=[];G.history=[];
+  G.winner=-1;G.lastChanceTrigger=-1;
+  G.players.forEach(p=>{p.score=0;p.turnsCompleted=0;});
+  render();
+}
+function newGame(){
+  G.phase='setup';G.players=[];G.log=[];G.history=[];
+  G.cur=0;G.turnScore=0;G.winner=-1;G.lastChanceTrigger=-1;
+  render();
+}
+function restart(){
+  G.cur=0;G.turnScore=0;G.log=[];G.history=[];
+  G.phase='playing';G.winner=-1;G.lastChanceTrigger=-1;
+  G.players.forEach(p=>{p.score=0;p.turnsCompleted=0;});
+  render();
+}
+function addPts(n){pushHistory();G.turnScore+=n;render();}
+function clearTurn(){pushHistory();G.turnScore=0;render();}
+
+/* Handles last-chance logic: equal turns for all players */
+function endTurn(){
+  const p=G.players[G.cur];
+  p.turnsCompleted++;
+  if(G.phase==='playing'&&p.score>=G.target){
+    G.phase='lastChance';
+    G.lastChanceTrigger=G.cur;
+  }
+  if(G.phase==='lastChance'){
+    const tT=G.players[G.lastChanceTrigger].turnsCompleted;
+    if(G.players.every(pl=>pl.turnsCompleted>=tT)){
+      G.winner=G.players.reduce((b,pl,i)=>pl.score>G.players[b].score?i:b,0);
+      G.phase='won';G.turnScore=0;
+      render();return;
+    }
+  }
+  G.cur=(G.cur+1)%G.players.length;
+  G.turnScore=0;render();
+}
+function bank(){
+  if(G.turnScore===0) return;
+  pushHistory();
+  const p=G.players[G.cur];
+  p.score+=G.turnScore;
+  G.log.unshift({name:p.name,type:'bank',pts:G.turnScore,total:p.score});
+  endTurn();
+}
+function bust(){
+  pushHistory();
+  const p=G.players[G.cur];
+  G.log.unshift({name:p.name,type:'bust',pts:0,total:p.score});
+  G.turnScore=0;endTurn();
+}
+/* Zilch = busting out after hot dice: the 500pt penalty/bonus stacks
+   on top of whatever was already racked up this turn, not a flat 500. */
+function zilch(){
+  pushHistory();
+  const p=G.players[G.cur];
+  const pts=G.turnScore+500;
+  p.score+=pts;
+  G.log.unshift({name:p.name,type:'zilch',pts,total:p.score});
+  G.turnScore=0;endTurn();
+}
+
+/* ── RENDER ── */
+function render(){
+  document.getElementById('app').replaceChildren(
+    G.phase==='setup'?setupView():
+    G.phase==='order'?orderView():
+    G.phase==='won'?winView():
+    gameView()
+  );
+}
+
+/* ── SETUP VIEW ── */
+function setupView(){
+  const wrap=e('div',{});
+  wrap.append(e('div',{class:'hdr-setup'},
+    e('span',{class:'logo-big'},'DICE GAME'),
+    e('div',{class:'logo-aka'},'aka Farkle'),
+    e('div',{class:'tagline'},'push your luck · five dice scoring'),
+    e('a',{class:'about-link',href:'/about'},'About Farkle & its history')
+  ));
+
+  /* Target score */
+  const tgt=e('input',{type:'number',min:'500',step:'500',value:G.target,style:{width:'120px'}});
+  tgt.addEventListener('change',()=>{G.target=Math.max(500,parseInt(tgt.value)||5000);});
+  wrap.append(e('div',{class:'field'},
+    e('label',{},'Target score'),
+    e('div',{style:{display:'flex',alignItems:'center',gap:'10px'}},
+      tgt,
+      e('span',{style:{fontSize:'14px',color:'var(--tx2)'}},'points to win')
+    )
+  ));
+
+  /* Player list */
+  if(G.players.length>0){
+    const list=e('div',{});
+    G.players.forEach((p,i)=>{
+      list.append(e('div',{class:'p-item'},
+        e('span',{},p.name),
+        e('button',{class:'rm','@click':()=>removePlayer(i)},'×')
+      ));
+    });
+    wrap.append(e('div',{class:'field'},e('label',{},`Players (${G.players.length})`),list));
+  }
+
+  /* Add player input */
+  const inp=e('input',{type:'text',placeholder:G.players.length===0?'Enter player name…':'Add another player…'});
+  const doAdd=()=>{if(inp.value.trim()){addPlayer(inp.value);inp.value='';inp.focus();}};
+  inp.addEventListener('keydown',ev=>{if(ev.key==='Enter')doAdd();});
+  wrap.append(e('div',{class:'field'},
+    e('label',{},G.players.length===0?'Add players':'Add another'),
+    e('div',{class:'add-row'},inp,e('button',{'@click':doAdd},'Add'))
+  ));
+
+  /* Frequency-sorted suggestion pills */
+  const taken=new Set(G.players.map(p=>p.name));
+  const sugg=suggestedNames(taken,5);
+  if(sugg.length&&G.players.length<6){
+    const row=e('div',{class:'pill-row'});
+    sugg.forEach(({n,c})=>{
+      const pill=e('button',{class:'pill','@click':()=>addPlayer(n)},`+ ${n}`);
+      if(c>0) pill.append(e('span',{class:'pill-count'},String(c)));
+      row.append(pill);
+    });
+    wrap.append(row);
+  }
+
+  const canStart=G.players.length>=1;
+  const startBtn=e('button',{class:'btn-start',disabled:!canStart},
+    canStart?`Start · ${G.players.length} player${G.players.length>1?'s':''}`:
+    'Add at least one player'
+  );
+  startBtn.addEventListener('click',()=>{
+    if(!canStart) return;
+    G.phase='order';render(); /* set turn order before the ad + game start */
+  });
+  wrap.append(startBtn);
+  wrap.append(scoringRef(true));
+  return wrap;
+}
+
+/* ── ORDER VIEW ── */
+/* Drag-to-reorder screen for choosing who goes first (and the rest of the
+   turn order) after players are picked but before the pre-game ad. */
+function orderView(){
+  const wrap=e('div',{});
+  wrap.append(e('div',{class:'hdr-setup'},
+    e('span',{class:'logo-big'},'DICE GAME'),
+    e('div',{class:'logo-aka'},'aka Farkle'),
+    e('div',{class:'tagline'},'set the turn order')
+  ));
+
+  wrap.append(e('div',{class:'order-hint'},
+    'Drag players into the order they\'ll play — first on the list goes first.'
+  ));
+
+  const origPlayers=G.players;
+  const list=e('div',{class:'order-list'});
+  origPlayers.forEach((p,i)=>{
+    const row=e('div',{class:'order-row'},
+      e('span',{class:'order-num'},String(i+1)),
+      e('span',{class:'order-name'},p.name),
+      e('span',{class:'order-handle'},'☰')
+    );
+    row.dataset.idx=i;
+    list.append(row);
+  });
+  wrap.append(list);
+  wireDragReorder(list);
+
+  const startBtn=e('button',{class:'btn-start'},'Start Game');
+  startBtn.addEventListener('click',()=>{
+    G.players=Array.from(list.children).map(r=>origPlayers[parseInt(r.dataset.idx)]);
+    showAd(()=>startGame()); /* order is locked in — now show the ad */
+  });
+  wrap.append(startBtn);
+
+  const backBtn=e('button',{class:'btn-new',style:{marginTop:'10px'}},'← Back');
+  backBtn.addEventListener('click',()=>{G.phase='setup';render();});
+  wrap.append(backBtn);
+
+  return wrap;
+}
+
+/* Pointer-based (mouse + touch) drag-to-reorder for .order-row items inside
+   `list`. Rows shift out of the way live; the dragged row is physically
+   moved in the DOM once on drop. Reading order is left to the caller. */
+function wireDragReorder(list){
+  let dragEl=null,dragIdx=0,startY=0,rowH=0,rows=[];
+
+  function onMove(clientY){
+    if(!dragEl) return;
+    const dy=clientY-startY;
+    dragEl.style.transform=`translateY(${dy}px)`;
+    const shift=Math.round(dy/rowH);
+    const newIdx=Math.min(rows.length-1,Math.max(0,dragIdx+shift));
+    rows.forEach((r,i)=>{
+      if(r===dragEl) return;
+      let off=0;
+      if(i>dragIdx&&i<=newIdx) off=-rowH;
+      else if(i<dragIdx&&i>=newIdx) off=rowH;
+      r.style.transform=off?`translateY(${off}px)`:'';
+    });
+    dragEl.dataset.targetIdx=newIdx;
+  }
+
+  function endDrag(){
+    if(!dragEl) return;
+    const newIdx=parseInt(dragEl.dataset.targetIdx||dragIdx);
+    dragEl.classList.remove('dragging');
+    dragEl.style.transform='';
+    delete dragEl.dataset.targetIdx;
+    rows.forEach(r=>{if(r!==dragEl) r.style.transform='';});
+    const reordered=rows.filter(r=>r!==dragEl);
+    reordered.splice(newIdx,0,dragEl);
+    reordered.forEach(r=>list.appendChild(r));
+    reordered.forEach((r,i)=>{r.querySelector('.order-num').textContent=String(i+1);});
+    dragEl=null;
+  }
+
+  list.addEventListener('pointerdown',ev=>{
+    const handle=ev.target.closest('.order-handle');
+    if(!handle) return;
+    const row=handle.closest('.order-row');
+    if(!row) return;
+    ev.preventDefault();
+    dragEl=row;
+    rows=Array.from(list.children);
+    dragIdx=rows.indexOf(row);
+    startY=ev.clientY;
+    rowH=row.getBoundingClientRect().height+7; /* row height + margin-bottom */
+    row.classList.add('dragging');
+
+    const move=e2=>onMove(e2.clientY);
+    const up=()=>{
+      endDrag();
+      document.removeEventListener('pointermove',move);
+      document.removeEventListener('pointerup',up);
+      document.removeEventListener('pointercancel',up);
+    };
+    document.addEventListener('pointermove',move);
+    document.addEventListener('pointerup',up);
+    document.addEventListener('pointercancel',up);
+  });
+}
+
+/* ── GAME VIEW ── */
+function gameView(){
+  const div=e('div',{});
+  const cur=G.players[G.cur];
+  const n=G.players.length;
+  const isLC=G.phase==='lastChance';
+
+  /* Header */
+  div.append(e('div',{class:'hdr-game'},
+    e('span',{class:'logo-sm'},
+      'DICE GAME',
+      e('span',{class:'logo-sm-aka'},'aka Farkle')
+    ),
+    e('span',{class:`phase-tag ${isLC?'phase-lc':'phase-playing'}`},isLC?'Last Chance':'Playing'),
+    e('button',{class:'btn-undo',disabled:G.history.length===0,'@click':undo},'↺ Undo'),
+    e('button',{class:'btn-newgame','@click':newGame},'New game')
+  ));
+
+  /* Last Chance banner */
+  if(isLC){
+    const leader=G.players[G.lastChanceTrigger];
+    const highScore=Math.max(...G.players.map(p=>p.score));
+    const tT=G.players[G.lastChanceTrigger].turnsCompleted;
+    const remaining=G.players.filter(p=>p.turnsCompleted<tT).length;
+    div.append(e('div',{class:'lc-banner'},
+      e('div',{class:'lc-top'},e('div',{class:'lc-dot'}),e('span',{class:'lc-ttl'},'Last Chance!')),
+      e('div',{class:'lc-body'},
+        `${leader.name} reached the target. Score to beat: `,
+        e('span',{class:'lc-hi'},highScore.toLocaleString()),
+        ` · ${remaining} player${remaining!==1?'s':''} to go`
+      )
+    ));
+  }
+
+  /* Player cards */
+  const cols=n<=2?n:n<=4?n:n<=6?3:4;
+  const grid=e('div',{class:'pgrid',style:{gridTemplateColumns:`repeat(${cols},1fr)`}});
+  G.players.forEach((p,i)=>{
+    const pct=Math.min(100,Math.round(p.score/G.target*100));
+    const active=i===G.cur;
+    const leader=isLC&&i===G.lastChanceTrigger&&!active;
+    let cls='pcard';
+    if(active) cls+=' active';
+    if(leader) cls+=' leader-card';
+    const card=e('div',{class:cls},
+      e('div',{class:'pcname'},p.name),
+      e('div',{class:'pcscore'},p.score.toLocaleString()),
+      e('div',{class:'pcbar'},e('div',{class:'pcfill',style:{width:pct+'%'}}))
+    );
+    if(active) card.append(e('div',{class:'pctag on'},'▶ now'));
+    else if(leader) card.append(e('div',{class:'pctag lead'},'◆ leader'));
+    grid.append(card);
+  });
+  div.append(grid);
+
+  /* Turn info */
+  div.append(e('div',{class:'turn-who'},
+    e('div',{class:'turn-name'},`${cur.name}'s turn`),
+    e('div',{class:'turn-sub'},isLC?'Last chance — make it count':'Tap values to build your score')
+  ));
+
+  /* Turn score bar */
+  const hasScore=G.turnScore>0;
+  const clrBtn=hasScore?e('button',{class:'clr','@click':clearTurn},'↺ clear'):null;
+  div.append(e('div',{class:'turn-bar'},
+    e('span',{class:'tbar-lbl'},'Turn'),
+    e('span',{class:`tbar-val${hasScore?' live':''}`},G.turnScore.toLocaleString()),
+    clrBtn
+  ));
+
+  /* Score grid */
+  const sg=e('div',{class:'sgrid'});
+  QS.forEach(s=>{
+    const b=e('button',{class:'sbtn'},`+${s}`);
+    b.addEventListener('click',()=>addPts(s));
+    sg.append(b);
+  });
+  div.append(sg);
+
+  /* Custom input */
+  const ci=e('input',{type:'number',min:'0',step:'50',placeholder:'Custom amount…'});
+  const doCustom=()=>{const v=parseInt(ci.value);if(v>0){addPts(v);ci.value='';}};
+  ci.addEventListener('keydown',ev=>{if(ev.key==='Enter')doCustom();});
+  div.append(e('div',{class:'custom-row'},ci,e('button',{'@click':doCustom},'+ Add')));
+
+  /* Action buttons */
+  const bankLabel=G.turnScore>0?G.turnScore.toLocaleString()+' pts':'─';
+  const zilchBtn=e('button',{class:'abtn abtn-zilch'},e('span',{class:'av'},'Zilch!'),e('span',{class:'ap'},`+${(G.turnScore+500).toLocaleString()} pts`));
+  zilchBtn.addEventListener('click',zilch);
+  const bankBtn=e('button',{class:'abtn abtn-bank',disabled:G.turnScore===0},e('span',{class:'av'},'Bank'),e('span',{class:'ap'},bankLabel));
+  bankBtn.addEventListener('click',bank);
+  const bustBtn=e('button',{class:'abtn abtn-bust'},e('span',{class:'av'},'Bust!'),e('span',{class:'ap'},'0 pts'));
+  bustBtn.addEventListener('click',bust);
+  div.append(e('div',{class:'act-row'},zilchBtn,bankBtn,bustBtn));
+
+  div.append(scoringRef(false));
+
+  /* Recent log */
+  if(G.log.length>0){
+    div.append(e('div',{class:'divider'}));
+    div.append(e('div',{class:'sec-hd'},'Recent'));
+    const lw=e('div',{});
+    G.log.slice(0,5).forEach(entry=>{
+      let ptsCls,ptsText;
+      if(entry.type==='bank'){ptsCls='lbank';ptsText=`banked +${entry.pts.toLocaleString()}`;}
+      else if(entry.type==='zilch'){ptsCls='lzilch';ptsText=`Zilch! +${entry.pts.toLocaleString()}`;}
+      else{ptsCls='lbust';ptsText='Bust — 0 pts';}
+      lw.append(e('div',{class:'logrow'},
+        e('span',{class:'lname'},entry.name),
+        e('span',{class:ptsCls},ptsText),
+        e('span',{class:'ltot'},entry.total.toLocaleString())
+      ));
+    });
+    div.append(lw);
+  }
+  return div;
+}
+
+/* ── WIN VIEW ── */
+function winView(){
+  const winner=G.players[G.winner];
+  const sorted=[...G.players].sort((a,b)=>b.score-a.score);
+  const div=e('div',{class:'win-wrap'});
+  div.append(
+    e('span',{class:'win-icon'},'🏆'),
+    e('div',{class:'win-label'},'Winner'),
+    e('div',{class:'win-name'},winner.name.toUpperCase()),
+    e('div',{class:'win-pts'},winner.score.toLocaleString()+' pts')
+  );
+  const tbl=e('table',{class:'ftbl'});
+  tbl.append(e('tr',{},e('th',{},'Place'),e('th',{},'Player'),e('th',{},'Score')));
+  sorted.forEach((p,i)=>{
+    tbl.append(e('tr',{class:p===winner?'wrow':''},
+      e('td',{},PLACES[i]||`${i+1}th`),e('td',{},p.name),e('td',{},p.score.toLocaleString())
+    ));
+  });
+  div.append(tbl);
+  const again=e('button',{class:'btn-again'},'Play again');
+  again.addEventListener('click',()=>showAd(()=>restart())); /* ad on Play Again too */
+  const ng=e('button',{class:'btn-new'},'New game');
+  ng.addEventListener('click',newGame);
+  div.append(e('div',{class:'btn-row'},again,ng));
+  return div;
+}
+
+/* ── SCORING REF ── */
+function scoringRef(open){
+  const d=e('details',{class:'ref-wrap'});
+  if(open) d.setAttribute('open','');
+  d.append(e('summary',{},'▸ Scoring reference'));
+  const rows=[
+    ['Single 1','100'],['Single 5','50'],['Three 1s','1,000'],
+    ['Three 2s','200'],['Three 3s','300'],['Three 4s','400'],
+    ['Three 5s','500'],['Three 6s','600'],
+  ];
+  const tbl=e('table',{class:'rtbl'});
+  rows.forEach(([roll,pts])=>tbl.append(e('tr',{},e('td',{},roll),e('td',{},pts))));
+  d.append(tbl);
+  return d;
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About · Dice Game (Farkle)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#0C0A08;
+  --s1:#141208;
+  --s2:#1D1910;
+  --s3:#272318;
+  --border:#38321E;
+  --border2:#4A4228;
+  --tx1:#EDE7DC;
+  --tx2:#9A8F7C;
+  --tx3:#5A5240;
+  --gold:#C8861E;
+  --gold2:#E8A030;
+  --gold-bg:rgba(200,134,30,0.10);
+  --gold-br:rgba(200,134,30,0.30);
+  --r:12px;
+  --rsm:8px;
+}
+
+html,body{min-height:100%;background:var(--bg);color:var(--tx1);font-family:'Outfit',system-ui,sans-serif;}
+body{
+  background-image:radial-gradient(rgba(255,255,255,0.025) 1px,transparent 1px);
+  background-size:22px 22px;
+  -webkit-text-size-adjust:100%;
+}
+#app{max-width:480px;margin:0 auto;padding:0 16px 60px;}
+
+a{color:var(--gold2);}
+
+/* ── HEADER ── */
+.hdr-setup{
+  padding:36px 0 22px;text-align:center;
+  border-bottom:1px solid var(--border);margin-bottom:28px;
+}
+.logo-big{
+  font-family:'Bebas Neue','Impact',sans-serif;
+  font-size:clamp(48px,13vw,66px);
+  letter-spacing:clamp(4px,1.5vw,8px);
+  color:var(--gold2);line-height:1;
+  text-shadow:0 0 50px rgba(232,160,48,0.28);
+  display:block;
+}
+.logo-aka{
+  font-size:13px;color:var(--tx3);
+  letter-spacing:0.18em;font-weight:300;
+  margin-top:5px;font-style:italic;
+}
+.tagline{
+  font-size:10px;color:var(--tx3);
+  letter-spacing:0.20em;text-transform:uppercase;
+  margin-top:10px;font-weight:500;
+}
+
+/* ── BACK LINK ── */
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--tx2);text-decoration:none;
+  margin-bottom:22px;padding:8px 0;
+}
+.back-link:active{color:var(--gold2);}
+
+/* ── CONTENT ── */
+.sec{margin-bottom:28px;}
+.sec h2{
+  font-size:11px;font-weight:600;color:var(--gold);
+  letter-spacing:0.14em;text-transform:uppercase;
+  margin-bottom:12px;
+}
+.sec p{
+  font-size:15px;line-height:1.65;color:var(--tx2);
+  margin-bottom:12px;
+}
+.sec p:last-child{margin-bottom:0;}
+.sec p b, .sec p strong{color:var(--tx1);font-weight:500;}
+.sec p em{color:var(--tx1);font-style:italic;}
+
+.name-grid{
+  display:flex;flex-wrap:wrap;gap:7px;margin-top:4px;
+}
+.name-pill{
+  font-size:12px;padding:5px 12px;border-radius:999px;
+  color:var(--tx2);background:var(--s1);border:1px solid var(--border);
+  font-family:'DM Mono','Courier New',monospace;
+}
+
+.note-box{
+  background:var(--gold-bg);border:1px solid var(--gold-br);
+  border-radius:var(--rsm);padding:14px 16px;margin-top:4px;
+}
+.note-box p{color:var(--tx2);font-size:13px;margin-bottom:0;}
+.note-box p b{color:var(--gold2);}
+
+.divider{height:1px;background:var(--border);margin:26px 0;}
+
+.btn-back{
+  width:100%;padding:16px;font-size:16px;font-weight:500;
+  border-radius:var(--r);background:var(--gold);
+  color:#1A1204;border:1px solid var(--gold2);
+  cursor:pointer;font-family:'Outfit',system-ui,sans-serif;
+  text-decoration:none;display:block;text-align:center;
+}
+.btn-back:active{background:var(--gold2);}
+
+.foot{
+  text-align:center;font-size:11px;color:var(--tx3);
+  margin-top:20px;letter-spacing:0.04em;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="hdr-setup">
+    <span class="logo-big">DICE GAME</span>
+    <div class="logo-aka">aka Farkle</div>
+    <div class="tagline">the history behind the game</div>
+  </div>
+
+  <a class="back-link" href="/">&larr; Back to the game</a>
+
+  <div class="sec">
+    <h2>What is Farkle?</h2>
+    <p>Farkle is a "push your luck" dice game for two or more players. Everyone shares one set of six dice, rolling and setting aside scoring combinations one turn at a time, deciding after every roll whether to <em>bank</em> the points they've built up or risk it all on another throw. Roll a hand with no scoring dice — a "Zilch," "Farkle," or "Bust," depending who you ask — and the points earned that turn vanish. First player to reach a target score (often 10,000) triggers one final round for everyone else to try to beat it.</p>
+  </div>
+
+  <div class="sec">
+    <h2>Origins &amp; history</h2>
+    <p>Unlike a game with a patent or a named inventor, Farkle doesn't have a clean origin story. It belongs to a large, old family of dice games built around the same core idea — score-and-risk with six dice — that folk tradition has passed around and reshaped for generations, likely for well over a century, with no single "first" version anyone can point to.</p>
+    <p>What we do know is that the family is genuinely international. French players have long known a nearly identical game as <em>Dix Mille</em> ("Ten Thousand"), German-speaking players as <em>Zehntausend</em>, and English-speaking players under names like <em>Greed</em>, <em>Squelch</em>, <em>Zilch</em>, and <em>Hot Dice</em>. The overlap in rules across languages and continents is strong evidence the game evolved and spread informally — around kitchen tables, in barracks, on ships — long before anyone tried to package it for sale.</p>
+    <p>One well-documented branch of the family is <b>Cosmic Wimpout</b>, a commercial version created in Vermont in 1977 and still sold today with its own distinct board and lingo. Its clear paper trail is the exception, though — it stands out precisely because most of the game's history left no paper trail at all.</p>
+  </div>
+
+  <div class="sec">
+    <h2>Where "Farkle" comes from</h2>
+    <p>The name itself is a later addition. "Farkle" started showing up as a boxed, commercially sold version of the folk game sometime in the late 20th century, and the word was trademarked as a brand name for that product. The underlying game people had already been playing for decades under other names simply picked up the catchier label, and "Farkle" gradually became the most common name for the whole family in American English — even though, strictly, it refers to one packaged edition of a much older game.</p>
+    <p>That's also why you'll hear a bad roll called three different things depending on who taught you the game:</p>
+    <div class="name-grid">
+      <span class="name-pill">Farkle</span>
+      <span class="name-pill">Zilch</span>
+      <span class="name-pill">Bust</span>
+      <span class="name-pill">Squelch</span>
+      <span class="name-pill">Greed</span>
+      <span class="name-pill">Zonk</span>
+      <span class="name-pill">Ten Thousand</span>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <p><b>A note on accuracy —</b> because Farkle is a folk game rather than one with a documented inventor, sources disagree on exact dates and details. This page sticks to what's broadly agreed upon rather than claiming precision the history doesn't actually have.</p>
+  </div>
+
+  <div class="sec">
+    <h2>Farkle today</h2>
+    <p>The rules that spread by word of mouth for so long are exactly what made Farkle easy to carry into the digital age — all you ever needed was six dice and something to keep score with, which is just as true on a phone screen as it is around a campfire. That's the same spirit this app is going for: pick a target score, add players, and start rolling.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <a class="btn-back" href="/">Back to the game</a>
+  <div class="foot">Dice Game · aka Farkle</div>
+
+</div>
+</body>
+</html>
