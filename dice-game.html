@@ -465,6 +465,78 @@ details[open] summary{border-bottom:1px solid var(--border);}
 .btn-again{padding:16px;font-size:16px;font-weight:500;border-radius:var(--r);background:var(--green);color:white;border-color:var(--green2);}
 .btn-again:active{background:var(--green2);}
 .btn-new{padding:16px;font-size:16px;font-weight:400;border-radius:var(--r);background:transparent;border-color:var(--border2);color:var(--tx1);}
+
+/* ── HISTORY ── */
+.hdr-links{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:14px;}
+.hdr-links .about-link{margin-top:0;}
+.hist-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;letter-spacing:0.04em;color:var(--tx2);
+  background:transparent;border:1px solid var(--border2);
+  border-radius:999px;padding:4px 12px;
+}
+.hist-link:active{color:var(--gold2);}
+.h-top{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 0 10px;border-bottom:1px solid var(--border);margin-bottom:18px;
+}
+.h-title{
+  font-family:'Bebas Neue','Impact',sans-serif;
+  font-size:26px;letter-spacing:4px;color:var(--gold2);line-height:1;
+  margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.h-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.h-tile{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);
+  padding:12px 12px 11px;min-width:0;
+}
+.h-tile.wide{grid-column:1/-1;}
+.h-tl{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
+.h-tv{
+  font-family:'DM Mono','Courier New',monospace;font-size:21px;font-weight:500;
+  color:var(--gold2);line-height:1.15;overflow-wrap:anywhere;
+}
+.h-tv.txt{font-family:'Outfit',system-ui,sans-serif;font-size:18px;font-weight:500;}
+.h-ts{font-size:12px;color:var(--tx2);margin-top:4px;line-height:1.35;overflow-wrap:anywhere;}
+.h-board{border:1px solid var(--border);border-radius:var(--rsm);overflow:hidden;margin-bottom:8px;}
+.h-row{
+  display:grid;grid-template-columns:1fr 36px 32px 52px 60px;align-items:center;gap:6px;
+  width:100%;padding:11px 12px;text-align:left;
+  background:var(--s1);color:var(--tx2);font-size:14px;
+  border:none;border-bottom:1px solid var(--border);border-radius:0;
+}
+.h-board>.h-row:last-child{border-bottom:none;}
+button.h-row:active{background:var(--s2);transform:none;}
+.h-row.h3{grid-template-columns:1fr 44px 78px;}
+.h-row.h-head{
+  font-size:10px;font-weight:600;color:var(--tx3);
+  letter-spacing:0.10em;text-transform:uppercase;padding:9px 12px;
+}
+.h-name{color:var(--tx1);font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.h-n{font-family:'DM Mono','Courier New',monospace;text-align:right;}
+.h-head .h-n{font-family:'Outfit',system-ui,sans-serif;}
+.h-rate{color:var(--gold2);}
+.h-tag{font-size:9px;font-weight:600;color:var(--gold);letter-spacing:0.10em;text-transform:uppercase;margin-left:8px;}
+.h-note{font-size:11px;color:var(--tx3);margin:0 2px 24px;line-height:1.5;}
+.h-game{
+  background:var(--s1);border:1px solid var(--border);border-radius:var(--rsm);
+  padding:12px 14px;margin-bottom:8px;
+}
+.h-gtop{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--tx3);letter-spacing:0.04em;margin-bottom:8px;}
+.h-gtop .m{font-family:'DM Mono','Courier New',monospace;}
+.h-prow{display:flex;align-items:baseline;gap:10px;font-size:14px;padding:2px 0;color:var(--tx2);}
+.h-prow .pl{width:28px;flex-shrink:0;font-size:11px;color:var(--tx3);font-family:'DM Mono','Courier New',monospace;}
+.h-prow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.h-prow .sc{font-family:'DM Mono','Courier New',monospace;color:var(--tx1);}
+.h-prow.win .nm,.h-prow.win .sc{color:var(--gold2);font-weight:500;}
+.h-prow.me .nm{color:var(--tx1);text-decoration:underline;text-decoration-color:var(--border2);text-underline-offset:3px;}
+.h-more{width:100%;padding:12px;font-size:13px;background:transparent;border-color:var(--border2);color:var(--tx2);margin:2px 0 8px;}
+.h-clear{
+  width:100%;padding:12px;font-size:13px;margin-top:18px;
+  background:transparent;border-color:var(--red-br);color:var(--red);
+}
+.h-empty{text-align:center;padding:56px 12px;color:var(--tx2);line-height:1.6;font-size:14px;}
+.h-empty .ic{font-size:40px;display:block;margin-bottom:14px;}
 </style>
 </head>
 <body>
@@ -480,7 +552,10 @@ const G={
   log:[],
   winner:-1,
   lastChanceTrigger:-1,
-  history:[]
+  history:[], /* undo snapshots — not the saved game history below */
+  histFrom:'setup', /* screen the History view returns to */
+  histPlayer:null,  /* player name whose detail page is open, if any */
+  histShown:10      /* how many recent games are listed */
 };
 const HISTORY_MAX=50;
 
@@ -730,6 +805,7 @@ function endTurn(){
     if(G.players.every(pl=>pl.turnsCompleted>=tT)){
       G.winner=G.players.reduce((b,pl,i)=>pl.score>G.players[b].score?i:b,0);
       G.phase='won';G.turnScore=0;
+      recordGame();
       render();return;
     }
   }
@@ -741,13 +817,13 @@ function bank(){
   pushHistory();
   const p=G.players[G.cur];
   p.score+=G.turnScore;
-  G.log.unshift({name:p.name,type:'bank',pts:G.turnScore,total:p.score});
+  G.log.unshift({name:p.name,type:'bank',pts:G.turnScore,total:p.score,i:G.cur});
   endTurn();
 }
 function bust(){
   pushHistory();
   const p=G.players[G.cur];
-  G.log.unshift({name:p.name,type:'bust',pts:0,total:p.score});
+  G.log.unshift({name:p.name,type:'bust',pts:0,total:p.score,i:G.cur});
   G.turnScore=0;endTurn();
 }
 /* Zilch = busting out after hot dice: the 500pt penalty/bonus stacks
@@ -757,8 +833,319 @@ function zilch(){
   const p=G.players[G.cur];
   const pts=G.turnScore+500;
   p.score+=pts;
-  G.log.unshift({name:p.name,type:'zilch',pts,total:p.score});
+  G.log.unshift({name:p.name,type:'zilch',pts,total:p.score,i:G.cur});
   G.turnScore=0;endTurn();
+}
+
+/* ── GAME HISTORY (localStorage) ── */
+/* One compact record per finished game, oldest first:
+   {t, target, rounds, winner, players:[{n,s,t,b,z,m}]}
+   n=name, s=final score, t=turns taken, b=busts, z=zilches, m=best single turn.
+   Players are stored in turn order. */
+const HIST_STORE='dicegame_game_history';
+const HIST_CAP=300;        /* oldest games drop off beyond this */
+const MIN_RATE_GAMES=3;    /* games needed before a win rate is ranked */
+
+function loadGameHistory(){
+  try{
+    const h=JSON.parse(localStorage.getItem(HIST_STORE));
+    return Array.isArray(h)?h:[];
+  }catch{return [];}
+}
+function recordGame(){
+  /* Two players can share a name; keep them distinct in the record */
+  const seen={};
+  const names=G.players.map(p=>{
+    seen[p.name]=(seen[p.name]||0)+1;
+    return seen[p.name]>1?`${p.name} (${seen[p.name]})`:p.name;
+  });
+  const per=G.players.map(()=>({b:0,z:0,m:0}));
+  G.log.forEach(l=>{
+    const s=per[l.i];
+    if(!s) return;
+    if(l.type==='bust') s.b++;
+    else{
+      if(l.type==='zilch') s.z++;
+      if(l.pts>s.m) s.m=l.pts;
+    }
+  });
+  try{
+    const h=loadGameHistory();
+    h.push({
+      t:Date.now(),
+      target:G.target,
+      rounds:Math.max(...G.players.map(p=>p.turnsCompleted)),
+      winner:names[G.winner],
+      players:G.players.map((p,i)=>({n:names[i],s:p.score,t:p.turnsCompleted,...per[i]}))
+    });
+    localStorage.setItem(HIST_STORE,JSON.stringify(h.slice(-HIST_CAP)));
+  }catch{}
+}
+
+/* ── HISTORY STATS ── */
+const fmt=n=>Math.round(n).toLocaleString();
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+
+function computeStats(games){
+  const P={};
+  const get=n=>P[n]||(P[n]={name:n,gp:0,w:0,scoreSum:0,bestScore:0,bestTurn:0,
+    turns:0,busts:0,zilches:0,opp:{},streak:0,bestStreak:0,form:[]});
+  let rounds=0,turns=0,busts=0,closest=null,topScore=null,topTurn=null;
+
+  games.forEach(g=>{
+    rounds+=g.rounds||0;
+    const win=g.players.find(p=>p.n===g.winner);
+    const others=g.players.filter(p=>p!==win);
+    if(win&&others.length){
+      const second=others.reduce((b,p)=>p.s>b.s?p:b,others[0]);
+      const margin=win.s-second.s;
+      if(!closest||margin<closest.margin) closest={margin,winner:win.n,second:second.n};
+    }
+    g.players.forEach(p=>{
+      const s=get(p.n);
+      s.gp++;s.scoreSum+=p.s;s.turns+=p.t;s.busts+=p.b;s.zilches+=p.z;
+      turns+=p.t;busts+=p.b;
+      if(p.s>s.bestScore) s.bestScore=p.s;
+      if(p.m>s.bestTurn) s.bestTurn=p.m;
+      if(!topScore||p.s>topScore.score) topScore={name:p.n,score:p.s};
+      if(!topTurn||p.m>topTurn.pts) topTurn={name:p.n,pts:p.m};
+      if(p.n===g.winner){s.w++;s.streak++;s.bestStreak=Math.max(s.bestStreak,s.streak);}
+      else s.streak=0;
+      s.form.push(p.n===g.winner?'W':'L');
+      /* Head to head: whoever finished with the higher score "beat" the other */
+      g.players.forEach(q=>{
+        if(q===p) return;
+        const o=s.opp[q.n]||(s.opp[q.n]={name:q.n,gp:0,w:0,l:0,t:0});
+        o.gp++;
+        if(p.s>q.s) o.w++;else if(p.s<q.s) o.l++;else o.t++;
+      });
+    });
+  });
+
+  const ps=Object.values(P);
+  let matchup=null;
+  ps.forEach(a=>Object.values(a.opp).forEach(o=>{
+    if(a.name<o.name&&(!matchup||o.gp>matchup.gp))
+      matchup={a:a.name,b:o.name,gp:o.gp,aw:o.w,bw:o.l};
+  }));
+
+  return{
+    n:games.length,since:games.length?games[0].t:null,
+    avgRounds:games.length?rounds/games.length:0,
+    bustRate:turns?busts/turns:0,
+    ps,closest,topScore,topTurn,matchup
+  };
+}
+
+function dateLabel(t){
+  const d=new Date(t),now=new Date();
+  const day=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime();
+  const diff=Math.round((day(now)-day(d))/86400000);
+  const time=d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+  if(diff===0) return `Today · ${time}`;
+  if(diff===1) return `Yesterday · ${time}`;
+  const o={day:'numeric',month:'short'};
+  if(d.getFullYear()!==now.getFullYear()) o.year='numeric';
+  return `${d.toLocaleDateString(undefined,o)} · ${time}`;
+}
+function shortDate(t){
+  const d=new Date(t),o={day:'numeric',month:'short'};
+  if(d.getFullYear()!==new Date().getFullYear()) o.year='numeric';
+  return d.toLocaleDateString(undefined,o);
+}
+
+/* ── HISTORY ACTIONS ── */
+function openHistory(from){
+  G.histFrom=from;G.histPlayer=null;G.histShown=10;
+  G.phase='history';render();window.scrollTo(0,0);
+}
+
+/* ── HISTORY VIEWS ── */
+function statTile(grid,label,val,sub,opt={}){
+  grid.append(e('div',{class:`h-tile${opt.wide?' wide':''}`},
+    e('div',{class:'h-tl'},label),
+    e('div',{class:`h-tv${opt.txt?' txt':''}`},String(val)),
+    sub?e('div',{class:'h-ts'},sub):null
+  ));
+}
+
+function gameCard(g,focus){
+  /* The declared winner leads even if a tie-break decided it */
+  const sorted=[...g.players].sort((a,b)=>b.s-a.s);
+  const wi=sorted.findIndex(p=>p.n===g.winner);
+  if(wi>0) sorted.unshift(sorted.splice(wi,1)[0]);
+  const card=e('div',{class:'h-game'},
+    e('div',{class:'h-gtop'},
+      e('span',{},dateLabel(g.t)),
+      e('span',{class:'m'},`${g.rounds} rounds · to ${fmt(g.target)}`)
+    )
+  );
+  sorted.forEach((p,i)=>card.append(
+    e('div',{class:`h-prow${i===0?' win':''}${p.n===focus?' me':''}`},
+      e('span',{class:'pl'},i===0?'🏆':(PLACES[i]||`${i+1}th`)),
+      e('span',{class:'nm'},p.n),
+      e('span',{class:'sc'},fmt(p.s))
+    )
+  ));
+  return card;
+}
+
+function recentGames(list,focus){
+  const frag=e('div',{});
+  list.slice(0,G.histShown).forEach(g=>frag.append(gameCard(g,focus)));
+  if(list.length>G.histShown){
+    frag.append(e('button',{class:'h-more','@click':()=>{G.histShown+=10;render();}},
+      `Show more (${list.length-G.histShown} older)`));
+  }
+  return frag;
+}
+
+function histOverview(st,games){
+  const div=e('div',{});
+  const rate=p=>p.w/p.gp;
+  const qual=st.ps.filter(p=>p.gp>=MIN_RATE_GAMES);
+  const pool=qual.length?qual:st.ps;
+  const topRate=[...pool].sort((a,b)=>rate(b)-rate(a)||b.gp-a.gp)[0];
+  const mostWins=[...st.ps].sort((a,b)=>b.w-a.w||rate(b)-rate(a))[0];
+  const streak=[...st.ps].sort((a,b)=>b.bestStreak-a.bestStreak)[0];
+  const prone=st.ps.filter(p=>p.turns>=10)
+    .sort((a,b)=>b.busts/b.turns-a.busts/a.turns)[0];
+
+  const tiles=e('div',{class:'h-tiles'});
+  statTile(tiles,'Games played',st.n,`since ${shortDate(st.since)}`);
+  statTile(tiles,'Avg game length',st.avgRounds.toFixed(1),'rounds per game');
+  statTile(tiles,'Top win rate',`${pct(topRate.w,topRate.gp)}%`,
+    `${topRate.name} · ${topRate.w} of ${topRate.gp}${qual.length?'':' (small sample)'}`);
+  statTile(tiles,'Most wins',mostWins.w,mostWins.name);
+  if(st.matchup){
+    const m=st.matchup;
+    statTile(tiles,'Most-played matchup',`${m.a} vs ${m.b}`,
+      `${m.gp} games together · ${m.a} ${m.aw}–${m.bw} ${m.b}`,{wide:true,txt:true});
+  }
+  statTile(tiles,'Highest score',fmt(st.topScore.score),st.topScore.name);
+  statTile(tiles,'Best single turn',fmt(st.topTurn.pts),st.topTurn.name);
+  if(st.closest){
+    statTile(tiles,'Closest game',
+      st.closest.margin===0?'Tie-break':`${fmt(st.closest.margin)} pts`,
+      `${st.closest.winner} over ${st.closest.second}`);
+  }
+  statTile(tiles,'Longest win streak',
+    streak.bestStreak>=2?`${streak.bestStreak} in a row`:'—',
+    streak.bestStreak>=2?streak.name:'no streaks yet');
+  statTile(tiles,'Bust rate',`${Math.round(st.bustRate*100)}%`,
+    prone?`of all turns · most bust-prone: ${prone.name} (${pct(prone.busts,prone.turns)}%)`:'of all turns',
+    {wide:true});
+  div.append(tiles);
+
+  /* Player leaderboard */
+  div.append(e('div',{class:'sec-hd'},'Players'));
+  const board=e('div',{class:'h-board'});
+  board.append(e('div',{class:'h-row h-head'},
+    e('span',{},'Player'),e('span',{class:'h-n'},'GP'),e('span',{class:'h-n'},'W'),
+    e('span',{class:'h-n'},'Win %'),e('span',{class:'h-n'},'Avg')
+  ));
+  [...st.ps]
+    .sort((a,b)=>(b.gp>=MIN_RATE_GAMES)-(a.gp>=MIN_RATE_GAMES)||rate(b)-rate(a)||b.gp-a.gp)
+    .forEach(p=>board.append(e('button',{class:'h-row','@click':()=>{
+      G.histPlayer=p.name;G.histShown=5;render();window.scrollTo(0,0);
+    }},
+      e('span',{class:'h-name'},p.name),
+      e('span',{class:'h-n'},String(p.gp)),
+      e('span',{class:'h-n'},String(p.w)),
+      e('span',{class:'h-n h-rate'},`${pct(p.w,p.gp)}%`),
+      e('span',{class:'h-n'},fmt(p.scoreSum/p.gp))
+    )));
+  div.append(board);
+  div.append(e('div',{class:'h-note'},
+    `Players with ${MIN_RATE_GAMES}+ games are ranked first. Avg is final score per game. Tap a player for head-to-head stats.`));
+
+  /* Recent games */
+  div.append(e('div',{class:'sec-hd'},'Recent games'));
+  div.append(recentGames([...games].reverse(),null));
+
+  /* Clear (two taps, to avoid wiping history by accident) */
+  const clr=e('button',{class:'h-clear'},'Clear history');
+  let armed=false,timer;
+  clr.addEventListener('click',()=>{
+    if(!armed){
+      armed=true;
+      clr.textContent=`Tap again to delete all ${games.length} games`;
+      timer=setTimeout(()=>{armed=false;clr.textContent='Clear history';},4000);
+      return;
+    }
+    clearTimeout(timer);
+    try{localStorage.removeItem(HIST_STORE);}catch{}
+    render();window.scrollTo(0,0);
+  });
+  div.append(clr);
+  return div;
+}
+
+function histPlayerDetail(games,p){
+  const div=e('div',{});
+  const opps=Object.values(p.opp).sort((a,b)=>b.gp-a.gp||b.w-a.w);
+  const tiles=e('div',{class:'h-tiles'});
+  statTile(tiles,'Win rate',`${pct(p.w,p.gp)}%`,`${p.w} won of ${p.gp} game${p.gp===1?'':'s'}`);
+  statTile(tiles,'Avg score',fmt(p.scoreSum/p.gp),`best ${fmt(p.bestScore)}`);
+  statTile(tiles,'Best single turn',fmt(p.bestTurn));
+  statTile(tiles,'Avg per turn',p.turns?fmt(p.scoreSum/p.turns):'—','points');
+  statTile(tiles,'Bust rate',`${pct(p.busts,p.turns)}%`,`${p.busts} in ${p.turns} turns`);
+  statTile(tiles,'Zilches',p.zilches);
+  statTile(tiles,'Win streak',p.streak,`current · best ${p.bestStreak}`);
+  statTile(tiles,'Recent form',p.form.slice(-5).join(' '),
+    `last ${Math.min(5,p.form.length)} game${p.form.length===1?'':'s'}, newest on the right`);
+  if(opps.length){
+    const o=opps[0];
+    statTile(tiles,'Most-played opponent',o.name,
+      `${o.gp} game${o.gp===1?'':'s'} together · ${p.name} ${o.w}–${o.l}${o.t?`–${o.t}`:''}`,{wide:true,txt:true});
+  }
+  div.append(tiles);
+
+  if(opps.length){
+    div.append(e('div',{class:'sec-hd'},'Head to head'));
+    const board=e('div',{class:'h-board'});
+    board.append(e('div',{class:'h-row h3 h-head'},
+      e('span',{},'Opponent'),e('span',{class:'h-n'},'Games'),e('span',{class:'h-n'},'W–L')));
+    opps.forEach((o,i)=>board.append(e('div',{class:'h-row h3'},
+      e('span',{class:'h-name'},o.name,i===0&&opps.length>1?e('span',{class:'h-tag'},'most played'):null),
+      e('span',{class:'h-n'},String(o.gp)),
+      e('span',{class:'h-n h-rate'},`${o.w}–${o.l}${o.t?`–${o.t}`:''}`)
+    )));
+    div.append(board);
+    div.append(e('div',{class:'h-note'},
+      'In games you both played, the higher final score counts as a win.'));
+  }
+
+  div.append(e('div',{class:'sec-hd'},'Recent games'));
+  div.append(recentGames([...games].reverse().filter(g=>g.players.some(x=>x.n===p.name)),p.name));
+  return div;
+}
+
+function historyView(){
+  const games=loadGameHistory();
+  const st=computeStats(games);
+  let sel=G.histPlayer?st.ps.find(p=>p.name===G.histPlayer):null;
+  if(!sel) G.histPlayer=null;
+  const wrap=e('div',{});
+  const goBack=()=>{
+    if(G.histPlayer){G.histPlayer=null;G.histShown=10;}
+    else G.phase=G.histFrom||'setup';
+    render();window.scrollTo(0,0);
+  };
+  wrap.append(e('div',{class:'h-top'},
+    e('span',{class:'h-title'},sel?sel.name.toUpperCase():'HISTORY'),
+    e('button',{class:'btn-newgame','@click':goBack},'← Back')
+  ));
+  if(!games.length){
+    wrap.append(e('div',{class:'h-empty'},
+      e('span',{class:'ic'},'📜'),
+      'No games recorded yet.',e('br'),
+      'Finish a game and its scores and stats will show up here.'
+    ));
+    return wrap;
+  }
+  wrap.append(sel?histPlayerDetail(games,sel):histOverview(st,games));
+  return wrap;
 }
 
 /* ── RENDER ── */
@@ -767,6 +1154,7 @@ function render(){
     G.phase==='setup'?setupView():
     G.phase==='order'?orderView():
     G.phase==='won'?winView():
+    G.phase==='history'?historyView():
     gameView()
   );
 }
@@ -774,11 +1162,16 @@ function render(){
 /* ── SETUP VIEW ── */
 function setupView(){
   const wrap=e('div',{});
+  const played=loadGameHistory().length;
   wrap.append(e('div',{class:'hdr-setup'},
     e('span',{class:'logo-big'},'DICE GAME'),
     e('div',{class:'logo-aka'},'aka Farkle'),
     e('div',{class:'tagline'},'push your luck · five dice scoring'),
-    e('a',{class:'about-link',href:'/about'},'About Farkle & its history')
+    e('div',{class:'hdr-links'},
+      e('a',{class:'about-link',href:'/about'},'About Farkle & its history'),
+      e('button',{class:'hist-link','@click':()=>openHistory('setup')},
+        'Game history',played?e('span',{class:'pill-count'},String(played)):null)
+    )
   ));
 
   /* Target score */
@@ -1087,6 +1480,7 @@ function winView(){
   const ng=e('button',{class:'btn-new'},'New game');
   ng.addEventListener('click',newGame);
   div.append(e('div',{class:'btn-row'},again,ng));
+  div.append(e('button',{class:'hist-link',style:{margin:'20px auto 0'},'@click':()=>openHistory('won')},'View game history'));
   return div;
 }
 
